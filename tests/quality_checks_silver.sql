@@ -1,6 +1,25 @@
---==========================================
+/*
+===============================================================================
+Quality Checks
+===============================================================================
+Script Purpose:
+    This script performs various quality checks for data consistency, accuracy, 
+    and standardization across the 'silver' layer. It includes checks for:
+    - Null or duplicate primary keys.
+    - Unwanted spaces in string fields.
+    - Data standardization and consistency.
+    - Invalid date ranges and orders.
+    - Data consistency between related fields.
+
+Usage Notes:
+    - Run these checks after data loading Silver Layer.
+    - Investigate and resolve any discrepancies found during the checks.
+===============================================================================
+*/
+
+--============================================================================================================
 --Adding data and Data transformation for silver.crm_cust_info from bronze.crm_cust_info
---===========================================
+--============================================================================================================
 
 ------------------------------------------------------------------------
 --Check For Nulls or Duplicates in Primary Key
@@ -92,9 +111,9 @@ FROM (
 
 SELECT * FROM silver.crm_cust_info
 
---==========================================
+--============================================================================================================
 --Adding data and Data transformation for silver.crm_prd_info from bronze.crm_prd_info
---===========================================
+--============================================================================================================
 
 SELECT * FROM bronze.crm_prd_info
 
@@ -189,9 +208,9 @@ CAST(prd_start_dt AS DATE) AS prd_start_dt,
 CAST(LEAD(prd_start_dt) OVER (PARTITION BY prd_key ORDER BY prd_start_dt)-1 AS DATE) AS prd_end_dt
 FROM bronze.crm_prd_info;
 
---==========================================
+--============================================================================================================
 --Adding data and Data transformation for silver.crm_sales_details from bronze.crm_sales_details
---===========================================
+--============================================================================================================
 
 ----------------------------------------------------------
 --Check for Invalid Dates
@@ -276,9 +295,9 @@ FROM bronze.crm_sales_details;
 --WHERE sls_prd_key NOT IN (SELECT prd_key FROM silver.crm_prd_info)
 --WHERE sls_cust_id NOT IN (SELECT cst_id FROM silver.crm_cust_info)
 
---==========================================
+--============================================================================================================
 --Adding data and Data transformation for silver.erp_cust_az12 from bronze.erp_cust_az12
---===========================================
+--============================================================================================================
 
 ---------------------------------------------
 --Identify Out-Of-Range Dates
@@ -321,9 +340,9 @@ FROM bronze.erp_cust_az12;
 --	ELSE cid
 --END NOT IN (SELECT DISTINCT cst_key FROM silver.crm_cust_info)
 
---==========================================
+--============================================================================================================
 --Adding data and Data transformation for silver.erp_loc_a101 from bronze.erp_loc_a101
---===========================================
+--============================================================================================================
 
 -----------------------------------------------------------------
 --Data Standarization & Consistency
@@ -352,9 +371,9 @@ END AS cntry
 FROM bronze.erp_loc_a101;
 --WHERE REPLACE(cid, '-', '') NOT IN (SELECT cst_key FROM silver.crm_cust_info)
 
---==========================================
+--============================================================================================================
 --Adding data and Data transformation for silver.erp_px_cat_g1v2 from bronze.erp_px_cat_g1v2
---===========================================
+--============================================================================================================
 
 ---------------------------------------------------
 --Check for Unwanted Spaces
